@@ -80,16 +80,6 @@ const naturePlayers = new Tone.Players({
     }
 });
 
-const talkingPlayers = new Tone.Players({
-    urls: {
-
-        record: './assets/begin-again.wav',
-        easier: './assets/easier.mp3',
-        sunrise: './assets/before-sunrise.mp3',
-        vinyl: './assets/vinyl.wav'
-    }
-});
-
 const aiPlayers = new Tone.Players({
     urls: {
         lofi_200_1: './assets/lofi-200-1.wav',
@@ -115,9 +105,6 @@ drumPlayers.chain(drumsVol, Tone.Destination);
 
 const natureVol = new Tone.Volume(-5);
 naturePlayers.chain(natureVol, Tone.Destination);
-
-const talkingVol = new Tone.Volume(5);
-talkingPlayers.chain(talkingVol, Tone.Destination);
 
 const guitarVol = new Tone.Volume(-5);
 const guitarReverb = new Tone.Reverb(1.5, 0.01, 0.2);
@@ -417,12 +404,6 @@ const naturePatterns = {
     ]
 };
 
-const talkingPatterns = {
-    record: [['4:0:0', 'record'], ['4:0:0', 'vinyl']],
-    easier: [['4:0:0', 'easier'], ['4:0:0', 'vinyl']],
-    sunrise: [['4:0:0', 'sunrise'], ['4:0:0', 'vinyl']]
-};
-
 const aiPatterns = {
     lofi_200_1: [
         ['0:0:0', 'lofi_200_1']
@@ -439,7 +420,6 @@ const patternDefaults = {
     chords: 'ylangYlang',
     drums: 'waterdrop',
     nature: 'wind',
-    talking: 'record',
     ai_track: 'lofi_400_1'
 };
 
@@ -454,7 +434,6 @@ const loadSoundPreferences = () => {
     const chordsSelected = JSON.parse(localStorage.getItem('chords'));
     const drumsSelected = JSON.parse(localStorage.getItem('drums'));
     const natureSoundsSelected = JSON.parse(localStorage.getItem('nature'));
-    const talkingSelected = JSON.parse(localStorage.getItem('talking'));
     const aiSelected = JSON.parse(localStorage.getItem('ai'));
     const aiTrackSelected = JSON.parse(localStorage.getItem('ai_track'));
     const choiceChordSelected = JSON.parse(localStorage.getItem('enableChord'));
@@ -465,13 +444,12 @@ const loadSoundPreferences = () => {
     const guitar = chords;
     const drums = drumsSelected ? drumsSelected : patternDefaults.drums;
     const nature = natureSoundsSelected ? natureSoundsSelected : patternDefaults.nature;
-    const talking = talkingSelected ? talkingSelected : patternDefaults.talking;
     const ai = aiSelected ? aiSelected : 'false';
     const ai_track = aiTrackSelected ? aiTrackSelected: patternDefaults.ai_track;
     const enableChord = choiceChordSelected ? choiceChordSelected: false;
     const enableAI = choiceAISelected ? choiceAISelected: false;
 
-    const musicPrefsObject = { chords, guitar, drums, nature, talking, ai, ai_track, enableAI, enableChord }
+    const musicPrefsObject = { chords, guitar, drums, nature, ai, ai_track, enableAI, enableChord }
 
     return musicPrefsObject; 
 }
@@ -491,7 +469,7 @@ const playingState = () => {
 
 // set up tone transport for selected loops
 const loadLoops = (selectedPatterns) => {
-    const { chords, drums, nature, talking, ai_track, enableAI, enableChord } = selectedPatterns;
+    const { chords, drums, nature, ai_track, enableAI, enableChord } = selectedPatterns;
     if (enableChord) {
    
         let chordPart = new Tone.Part((time, note) => {
@@ -518,11 +496,6 @@ const loadLoops = (selectedPatterns) => {
     naturePart.loop = true;
     naturePart.loopStart = 0;
     naturePart.loopEnd = '24';
-
-    let talkingPart = new Tone.Part((time, effect) => {
-        talkingPlayers.player(effect).start(time);
-    }, talkingPatterns[talking]).start();
-    talkingPart.loop = false;
     
     if (enableAI) {
         let aiTrackPart = new Tone.Part((time, effect) => {
@@ -574,10 +547,6 @@ const setNatureSounds = (input) => {
             
     }
         
-}
-
-const setTalking = (input) => {
-    localStorage.setItem('talking', JSON.stringify(input));
 }
 
 const setAITrack = (input) => {
