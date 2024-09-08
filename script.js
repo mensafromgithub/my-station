@@ -463,6 +463,8 @@ const loadSoundPreferences = () => {
 const playingState = () => {
     disableForm();
     startButton.disabled = true;
+    chooseButton.disabled = true;
+    useAIButton.disabled = true;
 };
 
 // set up tone transport for selected loops
